@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
-import os
 from dotenv import load_dotenv
 
 # 加载环境变量
@@ -10,10 +8,9 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=os.getenv("NVIDIA_API_KEY")
-)
+from groq import Groq
+
+client = Groq()
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -22,7 +19,7 @@ def chat():
         user_message = data.get('message')
         
         completion = client.chat.completions.create(
-            model="deepseek-ai/deepseek-r1",
+            model="deepseek-r1-distill-qwen-32b",
             messages=[{"role": "user", "content": user_message}],
             temperature=0.6,
             top_p=0.7,
